@@ -7,5 +7,6 @@ namespace account.dataaccess.entities
         public string AccountType { get; set; }
         public string BranchAddress { get; set; }
         public string CreateDate { get; set; }
+        public string ConfigValue { get; set; }
     }
 }
