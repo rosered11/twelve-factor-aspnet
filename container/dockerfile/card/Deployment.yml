@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: card-deployment
+  labels:
+    app: card
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card
+  template:
+    metadata:
+      labels:
+        app: card
+    spec:
+      containers:
+      - name: card
+        image: rosered/twelve-factor-card:manifest-amd64
+        #image: mcr.microsoft.com/dotnet/samples:aspnetapp
+        ports:
+        - containerPort: 80
+        env:
+        - name: Eureka__Client__ServiceUrl
+          value: "http://eurekaserver-service:8761/eureka/"
+        - name: Eureka__Client__ValidateCertificates
+          value: "false"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: card-service
+spec:
+  selector:
+    app: card
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8088
+      targetPort: 80

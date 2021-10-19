@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.ConfigServer;
+using Steeltoe.Common.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace card
 {
@@ -17,7 +19,9 @@ namespace card
                 .AddConfigServer()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                });
+                    webBuilder
+                    .UseStartup<Startup>();
+                })
+                .UseCloudHosting(80);
     }
 }

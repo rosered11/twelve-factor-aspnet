@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Discovery.Client;
 
 namespace twelve_factor_aspnet
 {
@@ -27,6 +29,11 @@ namespace twelve_factor_aspnet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Register on Eureka
+            services.AddDiscoveryClient(Configuration);
+            // Setting HttpFactory for call another services
+            services.AddHttpClient("card", client => client.BaseAddress = new Uri("http://cardapi/")).AddServiceDiscovery();
+            
             services.AddScoped<IAccountRepository, MockAccountRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c =>

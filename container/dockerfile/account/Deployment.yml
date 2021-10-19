@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-deployment
+  labels:
+    app: account
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      containers:
+      - name: account
+        image: rosered/twelve-factor-account:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: Eureka__Client__ServiceUrl
+          value: "http://eurekaserver-service:8761/eureka/"
+        - name: Eureka__Client__ValidateCertificates
+          value: "false"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+spec:
+  selector:
+    app: account
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 80
