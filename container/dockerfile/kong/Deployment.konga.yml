@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: konga-ui
+  labels:
+    app: konga-ui
+spec:
+  selector:
+    matchLabels:
+      app: konga-ui
+  template:
+    metadata:
+      labels:
+        app: konga-ui
+    spec:
+      containers:
+      - name: konga-ui
+        image: pantsel/konga
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: TOKEN_SECRET
+            value: 2E55D9A3EFB8542DC145C19EA3D5E
+          - name: DB_ADAPTER
+            value: postgres
+          - name: DB_HOST
+            value: postgres-service
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_USER
+            value: kong
+          - name: DB_PASSWORD
+            value: kong
+          - name: DB_DATABASE
+            value: postgres
+          - name: NODE_ENV
+            value: production
+          
+          # - name: KONG_PROXY_LISTEN
+          #   value: 'off'
+          # - name: KONG_ADMIN_SSL_CERT
+          #   value: /api-server-cert/tls.crt
+          # - name: KONG_ADMIN_SSL_CERT_KEY
+          #   value: /api-server-cert/tls.key
+          # - name: KONG_NGINX_WORKER_PROCESSES
+          #   value: "1"
+        # volumeMounts:
+        #   - name: api-server-cert
+        #     mountPath: /api-server-cert
+        ports:
+        - name: admin-http
+          containerPort: 1337
+        # livenessProbe:
+        #   failureThreshold: 3
+        #   httpGet:
+        #     path: /status
+        #     port: 8001
+        #     scheme: HTTP
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        #   successThreshold: 1
+        #   timeoutSeconds: 1
+        # readinessProbe:
+        #   failureThreshold: 3
+        #   httpGet:
+        #     path: /status
+        #     port: 8001
+        #     scheme: HTTP
+        #   periodSeconds: 10
+        #   successThreshold: 1
+        #   timeoutSeconds: 1
+      # volumes:
+      # - name: api-server-cert
+      #   secret:
+      #     secretName: konga-ui.kong.svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: konga-ui
+spec:
+  type: NodePort
+  ports:
+    - name: admin-http
+      port: 1337
+      targetPort: 1337
+      nodePort: 30003
+  selector:
+    app: konga-ui

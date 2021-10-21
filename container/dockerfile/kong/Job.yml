@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kong-control-plane-bootstrap
+  labels:
+    app: kong-control-plane-bootstrap
+spec:
+  template:
+    metadata:
+      name: kong-control-plane-bootstrap
+      labels:
+        app: kong-control-plane
+    spec:
+      containers:
+      - name: kong-migration-boostrap
+        image: kong
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: KONG_PG_PASSWORD
+            value: kong
+          - name: KONG_PG_HOST
+            value: postgres-service
+          - name: KONG_PASSWORD
+            value: "kong"
+          - name: KONG_DATABASE
+            value: postgres
+        command: [ "kong", "migrations", "bootstrap" ]
+      restartPolicy: OnFailure

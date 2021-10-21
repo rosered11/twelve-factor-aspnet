@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: konga-ui-bootstrap
+  labels:
+    app: konga-ui-bootstrap
+spec:
+  template:
+    metadata:
+      name: konga-ui-bootstrap
+      labels:
+        app: konga-ui-bootstrap
+    spec:
+      containers:
+      - name: kong-ui-boostrap
+        image: pantsel/konga
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: KONG_PG_PASSWORD
+            value: kong
+          - name: KONG_PG_HOST
+            value: postgres-service
+          - name: KONG_PASSWORD
+            value: "kong"
+          - name: KONG_DATABASE
+            value: postgres
+        command: [ "/app/start.sh", "-c", "prepare", "-a", "postgres", "-u", "postgresql://kong:kong@postgres-service:5432/konga" ]
+      restartPolicy: OnFailure

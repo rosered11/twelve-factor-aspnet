@@ -63,3 +63,5 @@ This url for check detail on config server
 - [Setup build image m1](https://betterprogramming.pub/how-to-actually-deploy-docker-images-built-on-a-m1-macs-with-apple-silicon-a35e39318e97)
 
 - [How to use Steeltoe K8S](https://docs.steeltoe.io/articles/tech-tutorial-use-kubernetes-for-modern-net-apps-steeltoe-and-project-tye-are-your-path-to-productivity.html)
+
+- [Kong](https://dev.to/rramname/api-gateway-and-microservices-using-kong-and-dotnet-core-in-docker-3khh)
