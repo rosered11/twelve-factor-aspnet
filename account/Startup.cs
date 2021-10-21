@@ -29,8 +29,6 @@ namespace twelve_factor_aspnet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Register on Eureka
-            services.AddDiscoveryClient(Configuration);
             // Setting HttpFactory for call another services
             services.AddHttpClient("card", client => client.BaseAddress = new Uri("http://cardapi/")).AddServiceDiscovery();
             

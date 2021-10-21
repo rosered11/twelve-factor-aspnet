@@ -16,7 +16,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
 # Setup curl command
-RUN apt update && apt install curl -y
+#RUN apt update && apt install curl -y
 WORKDIR /app
 #COPY --from=build /app ./
 COPY out ./

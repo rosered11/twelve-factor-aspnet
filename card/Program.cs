@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Discovery.Client;
 
 namespace card
 {
@@ -20,6 +21,8 @@ namespace card
                 {
                     webBuilder
                     .UseStartup<Startup>();
-                });
+                })
+                .AddDiscoveryClient()
+                ;
     }
 }

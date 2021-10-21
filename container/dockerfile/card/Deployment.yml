@@ -17,14 +17,15 @@ spec:
       containers:
       - name: card
         image: rosered/twelve-factor-card:amd64
-        #image: rosered/myapp
         ports:
-        - containerPort: 5080
+        - containerPort: 8088
         env:
         - name: Eureka__Client__ServiceUrl
           value: "http://eurekaserver-service:8761/eureka/"
         - name: Eureka__Client__ValidateCertificates
           value: "false"
+        - name: Eureka__Instance__HostName
+          value: "card-service"
         - name: ASPNETCORE_ENVIRONMENT
           value: "Development"
         - name: Logging__LogLevel__Default
@@ -32,7 +33,7 @@ spec:
         - name: Logging__LogLevel__Steeltoe
           value: "Debug"
         - name: Urls
-          value: "http://*:5080"
+          value: "http://*:8088"
 
 ---
 apiVersion: v1
@@ -42,8 +43,8 @@ metadata:
 spec:
   selector:
     app: card
-  #type: LoadBalancer
+  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 8088
-      targetPort: 5080
+      targetPort: 8088
