@@ -1,18 +1,24 @@
-# syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
-WORKDIR /app
+# https://hub.docker.com/_/microsoft-dotnet
+#FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+#WORKDIR /source
 
 # Copy csproj and restore as distinct layers
-COPY account/*.csproj ./
-RUN dotnet restore
+#COPY account/*.csproj ./
+#RUN dotnet restore ./account.csproj
 
 # Copy everything else and build
-COPY account ./
-COPY github /github
-RUN dotnet publish -c Release -o out
+#COPY account/* ./
+#RUN find -type d -name bin -prune -exec rm -rf {} \; && find -type d -name obj -prune -exec rm -rf {} \;
+#COPY github /github
+#RUN dotnet publish -c release -o /app --no-restore
 
-# Build runtime image
+# final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
+
+# Setup curl command
+#RUN apt update && apt install curl -y
 WORKDIR /app
-COPY --from=build-env /app/out .
+#COPY --from=build /app ./
+COPY out ./
+#COPY out_arm64 ./
 ENTRYPOINT ["dotnet", "account.dll"]

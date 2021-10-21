@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: eurekaserver
-        #image: rosered/eureka:latest
-        image: eazybytes/eurekaserver
+        image: rosered/eureka:amd64
+        #image: eazybytes/eurekaserver
         ports:
         - containerPort: 8761
 

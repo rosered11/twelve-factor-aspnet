@@ -21,4 +21,5 @@ WORKDIR /app
 #COPY --from=build /app ./
 COPY out ./
 #COPY out_arm64 ./
-ENTRYPOINT ["dotnet", "card.dll"]
+#ENTRYPOINT ["dotnet", "card.dll"]
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet card.dll
