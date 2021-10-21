@@ -30,7 +30,7 @@ namespace twelve_factor_aspnet
         public void ConfigureServices(IServiceCollection services)
         {
             // Setting HttpFactory for call another services
-            services.AddHttpClient("card", client => client.BaseAddress = new Uri("http://cardapi/")).AddServiceDiscovery();
+            services.AddHttpClient("card", client => client.BaseAddress = new Uri(Configuration["cards:url"])).AddServiceDiscovery();
             
             services.AddScoped<IAccountRepository, MockAccountRepository>();
             services.AddControllers();
