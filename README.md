@@ -65,3 +65,7 @@ This url for check detail on config server
 - [How to use Steeltoe K8S](https://docs.steeltoe.io/articles/tech-tutorial-use-kubernetes-for-modern-net-apps-steeltoe-and-project-tye-are-your-path-to-productivity.html)
 
 - [Kong](https://dev.to/rramname/api-gateway-and-microservices-using-kong-and-dotnet-core-in-docker-3khh)
+
+- [How to use Kong](https://wisdomgoody.medium.com/มาลองเล่น-kong-ด้วย-konga-กัน-แล้วจะรู้ว่า-kong-ไม่ได้มีดีแค่เป็น-api-gateway-ทั่วๆไป-ตอนที่-1-17185899e1d0)
+
+- [Setup Zipkin on ASP.Net](https://www.alibabacloud.com/help/doc-detail/99881.htm)

@@ -36,7 +36,7 @@ namespace account.controllers
             var account = _accountRepo.FindByCustomerId(customer);
             account.ConfigValue = _config["accounts:msg"];
             var client = _httpClientFactory.CreateClient("card");
-            var response = await client.PostAsync("http://cardapi/card/myCard", new StringContent("{}", Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync("card/myCard", new StringContent("{}", Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             return Ok(new { account = account, result });

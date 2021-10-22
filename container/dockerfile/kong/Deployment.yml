@@ -51,6 +51,8 @@ spec:
           containerPort: 8001
         - name: admin-https
           containerPort: 8444
+        - name: gateway
+          containerPort: 8000
         # livenessProbe:
         #   failureThreshold: 3
         #   httpGet:
@@ -86,5 +88,9 @@ spec:
       port: 8001
       targetPort: 8001
       nodePort: 30002
+    - name: gateway
+      port: 8000
+      targetPort: 8000
+      nodePort: 30100
   selector:
     app: kong-control-plane

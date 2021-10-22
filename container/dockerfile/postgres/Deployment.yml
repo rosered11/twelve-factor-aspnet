@@ -26,6 +26,16 @@ spec:
           value: "kong"
         - name: POSTGRES_PASSWORD
           value: "kong"
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-volume
+      volumes:
+      - name: postgres-volume
+        hostPath:
+          path: /home/postgres/volume
+          type: Directory
 
 ---
 apiVersion: v1

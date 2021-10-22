@@ -22,16 +22,8 @@ spec:
             value: 2E55D9A3EFB8542DC145C19EA3D5E
           - name: DB_ADAPTER
             value: postgres
-          - name: DB_HOST
-            value: postgres-service
-          - name: DB_PORT
-            value: "5432"
-          - name: DB_USER
-            value: kong
-          - name: DB_PASSWORD
-            value: kong
-          - name: DB_DATABASE
-            value: postgres
+          - name: DB_URI
+            value: postgresql://kong:kong@postgres-service:5432/konga
           - name: NODE_ENV
             value: production
           
