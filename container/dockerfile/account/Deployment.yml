@@ -19,6 +19,17 @@ spec:
         image: rosered/twelve-factor-account:latest
         ports:
         - containerPort: 5081
+          # livenessProbe:
+          #   failureThreshold: 3
+          #   exec:
+          #     command:
+          #     - /bin/sh
+          #     - -c
+          #     - 'curl -s https://my-config-server.herokuapp.com/account/prod | grep -c "accounts.msg"'
+          # initialDelaySeconds: 30
+          # periodSeconds: 10
+          # successThreshold: 1
+          # timeoutSeconds: 1
         env:
         - name: Eureka__Client__ServiceUrl
           value: "http://eurekaserver-service:8761/eureka/"
