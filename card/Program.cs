@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Management.Endpoint;
 
 namespace card
 {
@@ -23,6 +24,8 @@ namespace card
                     .UseStartup<Startup>();
                 })
                 .AddDiscoveryClient()
+                // Management Steeltoe
+                .AddAllActuators()
                 ;
     }
 }

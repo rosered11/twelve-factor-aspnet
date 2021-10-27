@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  configserver:
+    image: rosered/config-server:arm64
+    command: --spring.cloud.config.server.git.uri=https://github.com/rosered11/configserver-source
+    mem_limit: 700m
+    ports:
+      - "8888:8888"
+    networks:
+      - rosered
+  eurekaserver:
+    image: rosered/eureka
+    mem_limit: 700m
+    ports:
+      - "8761:8761"
+    networks:
+      - rosered
+    # environment:
+    #   Eureka__Client__ServiceUrl: http://localhost:8761/eureka
+    #   Eureka__Client__ShouldFetchRegistry: false
+    #   Eureka__Client__ValidateCertificates: false
+  prometheus:
+    image: prom/prometheus
+    mem_limit: 700m
+    ports:
+      - "9090:9090"
+    volumes:
+    - ./container/dockerfile/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - rosered
+  grafana:
+    image: grafana/grafana
+    mem_limit: 700m
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    depends_on:
+      - prometheus
+    networks:
+      - rosered
+  cards:
+    #image: rosered/twelve-factor-card:latest
+    build:
+      context: .
+      dockerfile: ./container/dockerfile/card/Dockerfile
+    mem_limit: 700m
+    ports:
+      - "8088:8088"
+    networks:
+      - rosered
+    depends_on:
+      - eurekaserver
+      - configserver
+    environment:
+      Eureka__Client__ServiceUrl: http://eurekaserver:8761/eureka/
+      Eureka__Client__ValidateCertificates: false
+      Eureka__Instance__HostName: card-service
+      Urls: "http://*:8088"
+      Spring__Cloud__Config__Uri: http://configserver:8888
+  # account:
+  #   image: rosered/twelve-factor-account:latest
+  #   mem_limit: 700m
+  #   ports:
+  #     - "81:81"
+  #   # networks:
+  #   #   - rosered
+  #   depends_on:
+  #     - eurekaserver
+  #   environment:
+  #     Eureka__Client__ServiceUrl: http://eurekaserver:8761/eureka
+  #     Eureka__Client__ShouldFetchRegistry: false
+  #   #  Eureka__Client__ValidateCertificates: false
+  #     Eureka__Instance__LeaseRenewalIntervalInSeconds: 15
+  #     Eureka__Instance__Hostname: localhost
+  #     Eureka__Instance__Port: 81
+networks:
+  rosered:
