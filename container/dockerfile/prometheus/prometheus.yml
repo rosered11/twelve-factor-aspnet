@@ -5,4 +5,8 @@ scrape_configs:
   - job_name: 'cards'
     metrics_path: '/metrics'
     static_configs:
-    - targets: ['cards:8088']
+    - targets: ['cards:8090']
+  - job_name: 'accounts'
+    metrics_path: '/metrics'
+    static_configs:
+    - targets: ['accounts:8091']

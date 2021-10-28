@@ -455,3 +455,6 @@ $RECYCLE.BIN/
 
 ## Github
 github/*
+
+## Docker Volumes
+volumes/*

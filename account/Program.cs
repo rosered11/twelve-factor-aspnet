@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.ConfigServer;
-using Steeltoe.Common.Hosting;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Management.Endpoint;
 
 namespace twelve_factor_aspnet
 {
@@ -22,6 +22,8 @@ namespace twelve_factor_aspnet
                     webBuilder.UseStartup<Startup>();
                 })
                 .AddDiscoveryClient()
-                .UseCloudHosting(81);
+                // Management Steeltoe
+                .AddAllActuators()
+                ;
     }
 }

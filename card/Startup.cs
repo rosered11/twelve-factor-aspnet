@@ -107,9 +107,6 @@ namespace card
                 endpoints.MapControllers();
 
                 // Micrometer ASP.NET Core exporter middleware
-                endpoints.MapAllActuators();
-                // endpoints.Map<MetricsEndpoint>();
-                // endpoints.Map<PrometheusEndpoint>();
                 endpoints.MapMetrics();
             });
         }

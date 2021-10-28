@@ -1,6 +1,22 @@
 version: "3.8"
 
 services:
+  # Postgres
+  postgres:
+    image: postgres:9.6
+    mem_limit: 700m
+    environment:
+      - POSTGRES_USER=kong
+      - POSTGRES_DB=kong
+      - POSTGRES_PASSWORD=kong
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./volumes/postgres:/var/lib/postgresql/data/pgdata"
+    networks:
+      - rosered
+  # Config Server
   configserver:
     image: rosered/config-server:arm64
     command: --spring.cloud.config.server.git.uri=https://github.com/rosered11/configserver-source
@@ -9,6 +25,7 @@ services:
       - "8888:8888"
     networks:
       - rosered
+  # Eureka Server
   eurekaserver:
     image: rosered/eureka
     mem_limit: 700m
@@ -16,10 +33,7 @@ services:
       - "8761:8761"
     networks:
       - rosered
-    # environment:
-    #   Eureka__Client__ServiceUrl: http://localhost:8761/eureka
-    #   Eureka__Client__ShouldFetchRegistry: false
-    #   Eureka__Client__ValidateCertificates: false
+  # Prometheus
   prometheus:
     image: prom/prometheus
     mem_limit: 700m
@@ -29,6 +43,8 @@ services:
     - ./container/dockerfile/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - rosered
+
+  # Grafana
   grafana:
     image: grafana/grafana
     mem_limit: 700m
@@ -41,14 +57,87 @@ services:
       - prometheus
     networks:
       - rosered
+  # Zipkin
+  zipkin-service:
+    image: openzipkin/zipkin
+    mem_limit: 700m
+    ports:
+      - "9411:9411"
+    networks:
+      - rosered
+  # Kong
+  kong:
+    image: kong
+    mem_limit: 700m
+    ports:
+      - "8001:8001"
+      - "8444:8444"
+      - "8000:8000"
+      - "8088:8088"
+    networks:
+      - rosered
+    depends_on:
+      - postgres
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_PASSWORD: kong
+      KONG_PG_HOST: postgres
+      KONG_PG_PORT: 5432
+      KONG_LOG_LEVEL: notice
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001,0.0.0.0:8444 ssl"
+  # Kong migration
+  kong-migration:
+    image: kong
+    command: "kong migrations bootstrap"
+    mem_limit: 700m
+    restart: on-failure
+    networks:
+      - rosered
+    depends_on:
+      - postgres
+    environment:
+      KONG_PG_HOST: postgres
+      KONG_DATABASE: postgres
+      KONG_PG_PASSWORD: kong
+      KONG_PG_PORT: 5432
+  # Konga
+  konga:
+    image: pantsel/konga
+    mem_limit: 700m
+    ports:
+      - "1337:1337"
+    depends_on:
+      - postgres
+    networks:
+      - rosered
+    environment:
+      TOKEN_SECRET: F6BE43C1914766EA3C75F948E6FEA
+      DB_ADAPTER: postgres
+      DB_URI: postgresql://kong:kong@postgres:5432/konga
+      NODE_ENV: production
+  # Konga Prepare
+  konga-prepare:
+    image: pantsel/konga
+    command: "-c prepare -a postgres -u postgresql://kong:kong@postgres:5432/konga"
+    mem_limit: 700m
+    restart: on-failure
+    depends_on:
+      - postgres
+    networks:
+      - rosered
+      
+  # Cards Service
   cards:
     #image: rosered/twelve-factor-card:latest
     build:
       context: .
-      dockerfile: ./container/dockerfile/card/Dockerfile
+      dockerfile: ./container/dockerfile/card/Dockerfile.docker
     mem_limit: 700m
     ports:
-      - "8088:8088"
+      - "8090:8090"
     networks:
       - rosered
     depends_on:
@@ -57,24 +146,27 @@ services:
     environment:
       Eureka__Client__ServiceUrl: http://eurekaserver:8761/eureka/
       Eureka__Client__ValidateCertificates: false
-      Eureka__Instance__HostName: card-service
-      Urls: "http://*:8088"
+      #Eureka__Instance__HostName: localhost
+      Urls: "http://*:8090"
       Spring__Cloud__Config__Uri: http://configserver:8888
-  # account:
-  #   image: rosered/twelve-factor-account:latest
-  #   mem_limit: 700m
-  #   ports:
-  #     - "81:81"
-  #   # networks:
-  #   #   - rosered
-  #   depends_on:
-  #     - eurekaserver
-  #   environment:
-  #     Eureka__Client__ServiceUrl: http://eurekaserver:8761/eureka
-  #     Eureka__Client__ShouldFetchRegistry: false
-  #   #  Eureka__Client__ValidateCertificates: false
-  #     Eureka__Instance__LeaseRenewalIntervalInSeconds: 15
-  #     Eureka__Instance__Hostname: localhost
-  #     Eureka__Instance__Port: 81
+  # Accounts Service
+  accounts:
+    #image: rosered/twelve-factor-account:latest
+    build:
+      context: .
+      dockerfile: ./container/dockerfile/account/Dockerfile.docker
+    mem_limit: 700m
+    ports:
+      - "8091:8091"
+    networks:
+      - rosered
+    depends_on:
+      - eurekaserver
+    environment:
+      Eureka__Client__ServiceUrl: http://eurekaserver:8761/eureka/
+      Eureka__Client__ValidateCertificates: false
+      #Eureka__Instance__HostName: localhost
+      Urls: "http://*:8091"
+      Spring__Cloud__Config__Uri: http://configserver:8888
 networks:
   rosered:

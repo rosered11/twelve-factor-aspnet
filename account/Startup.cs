@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using zipkin4net;
@@ -76,12 +77,17 @@ namespace twelve_factor_aspnet
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            // Must to setup under app.UseRouting()
+            app.UseHttpMetrics();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                // Micrometer ASP.NET Core exporter middleware
+                endpoints.MapMetrics();
             });
         }
     }

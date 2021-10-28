@@ -1,0 +1,26 @@
+# https://hub.docker.com/_/microsoft-dotnet
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /source
+
+# Copy csproj and restore as distinct layers
+COPY account/*.csproj ./
+RUN dotnet restore ./account.csproj
+
+# Copy everything else and build
+COPY account/* ./
+#RUN find -type d -name bin -prune -exec rm -rf {} \; && find -type d -name obj -prune -exec rm -rf {} \;
+RUN mkdir /github
+COPY github /github/
+RUN dotnet restore /github/aspnet-time-utility/src/aspnet-time-utility.csproj
+RUN dotnet publish -c release -o /app --no-restore
+
+# final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
+
+# Setup curl command
+#RUN apt update && apt install curl -y
+WORKDIR /app
+COPY --from=build /app ./
+#COPY out ./
+#COPY out_arm64 ./
+ENTRYPOINT ["dotnet", "account.dll"]
