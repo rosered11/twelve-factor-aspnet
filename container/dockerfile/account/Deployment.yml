@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
       - name: account
-        image: rosered/twelve-factor-account:latest
+        image: rosered/twelve-factor-account:arm64
         ports:
-        - containerPort: 5081
+        - containerPort: 8091
           # livenessProbe:
           #   failureThreshold: 3
           #   exec:
@@ -38,7 +38,9 @@ spec:
         - name: Eureka__Instance__HostName
           value: "account-service"
         - name: Urls
-          value: "http://*:5081"
+          value: "http://*:8091"
+        - name: Spring__Cloud__Config__Uri
+          value: http://configserver-service:8888
 
 ---
 apiVersion: v1
@@ -48,8 +50,9 @@ metadata:
 spec:
   selector:
     app: account
-  type: LoadBalancer
+  type: NodePort
   ports:
     - protocol: TCP
-      port: 8081
-      targetPort: 5081
+      port: 8091
+      targetPort: 8091
+      nodePort: 30201

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres
+        image: postgres:9.6
         ports:
         - containerPort: 5432
         env:
@@ -34,7 +34,7 @@ spec:
       volumes:
       - name: postgres-volume
         hostPath:
-          path: /home/postgres/volume
+          path: /Users/rosered/var/local/postgres
           type: Directory
 
 ---

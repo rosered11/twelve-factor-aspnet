@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configserver-deployment
+  labels:
+    app: configserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configserver
+  template:
+    metadata:
+      labels:
+        app: configserver
+    spec:
+      containers:
+      - name: configserver
+        image: rosered/config-server:arm64
+        ports:
+        - containerPort: 8888
+        args: ["--spring.cloud.config.server.git.uri=https://github.com/rosered11/configserver-source"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configserver-service
+spec:
+  selector:
+    app: configserver
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8888
+      targetPort: 8888
+      nodePort: 30006
